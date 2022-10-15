@@ -1,0 +1,35 @@
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  color: rgba(30, 5, 5, 0.869);
+}
+
+h3 {
+  font-size: 1.2em;
+  font-weight: 610;
+  color: brown;
+}
+
+p {
+  font-size: 1em;
+  font-weight: 400;
+  color: rgba(61, 18, 18, 0.869);
+  line-height: 1.5em;
+}
+
+.card {
+  margin: 5%;
+  background-color: bisque;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.card-img img {
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.card-body {
+  padding: 2% 5% 8% 5%;
+}

@@ -42,6 +42,10 @@ const AllProducts = () => {
       setProducts([...sortLowToHigh]);
     }
   };
+
+  const handleFilter = (value) =>
+    setProducts([...products.filter((product) => product.category === value)]);
+
   return (
     <div className="container">
       <div className="heading text-position">
@@ -64,10 +68,10 @@ const AllProducts = () => {
         <select
           name="categories"
           id="categories"
-          onChange={(e) => handlePriceSorting(e.target.value)}
+          onChange={(e) => handleFilter(e.target.value)}
         >
           {categories.map((category) => {
-            return <option>{category}</option>;
+            return <option value={category}>{category}</option>;
           })}
         </select>
       </div>

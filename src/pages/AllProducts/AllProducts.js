@@ -6,25 +6,24 @@ import axiosInstance from "../../services/axiosInstance";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
-  const categories = ["All"];
+  const [categories, setCategories] = useState(["All"]);
+  const [selectedCategory, setSelectedCategory] = useState(["All"]);
 
   useEffect(() => {
     axiosInstance
       .get("/products")
       .then((res) => {
-        console.log(res.data);
         setProducts(res.data);
+
+        let allCategories = res.data.map((product) => product.category);
+        let uniqueCategories = [...new Set(allCategories)];
+
+        setCategories([...categories, ...uniqueCategories]);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
-
-  products.forEach((product) => {
-    if (!categories.includes(product.category)) {
-      categories.push(product.category);
-    }
-  });
 
   function compareHighToLow(a, b) {
     return b.price - a.price;
@@ -43,8 +42,9 @@ const AllProducts = () => {
     }
   };
 
-  const handleFilter = (value) =>
-    setProducts([...products.filter((product) => product.category === value)]);
+  const handleFilter = (value) => {
+    setSelectedCategory(value);
+  };
 
   return (
     <div className="container">
@@ -76,9 +76,15 @@ const AllProducts = () => {
         </select>
       </div>
       <div className="cards">
-        {products.map((product) => {
-          return <Product key={product.id} {...product} />;
-        })}
+        {selectedCategory === "All"
+          ? products.map((product) => {
+              return <Product key={product.id} {...product} />;
+            })
+          : products
+              .filter((product) => product.category === selectedCategory)
+              .map((product) => {
+                return <Product key={product.id} {...product} />;
+              })}
       </div>
     </div>
   );

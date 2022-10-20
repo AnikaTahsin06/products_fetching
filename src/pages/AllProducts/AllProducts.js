@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Product from "./../../components/Product/Product";
 import "./AllProducts.css";
 import axiosInstance from "../../services/axiosInstance";
+import Pagination from "../../components/Pagination/Pagination";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
@@ -34,6 +35,9 @@ const AllProducts = () => {
     indexOfFirstProduct,
     indexOfLastProduct
   );
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   function compareHighToLow(a, b) {
     return b.price - a.price;
@@ -87,7 +91,7 @@ const AllProducts = () => {
       </div>
       <div className="cards">
         {selectedCategory === "All"
-          ? products.map((product) => {
+          ? currentProducts.map((product) => {
               return <Product key={product.id} {...product} />;
             })
           : products
@@ -96,6 +100,11 @@ const AllProducts = () => {
                 return <Product key={product.id} {...product} />;
               })}
       </div>
+      <Pagination
+        productsPerPage={productsPerPage}
+        totalProducts={products.length}
+        paginate={paginate}
+      />
     </div>
   );
 };

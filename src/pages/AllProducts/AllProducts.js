@@ -7,7 +7,9 @@ import axiosInstance from "../../services/axiosInstance";
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(["All"]);
-  const [selectedCategory, setSelectedCategory] = useState(["All"]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(6);
 
   useEffect(() => {
     axiosInstance
@@ -24,6 +26,14 @@ const AllProducts = () => {
         console.log(err);
       });
   }, []);
+
+  //Get current products
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   function compareHighToLow(a, b) {
     return b.price - a.price;

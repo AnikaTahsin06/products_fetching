@@ -11,30 +11,51 @@ const AllProducts = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(6);
-
-  useEffect(() => {
-    axiosInstance
-      .get("/products")
-      .then((res) => {
-        setProducts(res.data);
-
-        let allCategories = res.data.map((product) => product.category);
-        let uniqueCategories = [...new Set(allCategories)];
-
-        setCategories([...categories, ...uniqueCategories]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const [currentProducts, setCurrentProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   //Get current products
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
+  let indexOfLastProduct = currentPage * productsPerPage;
+  let indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+
+  useEffect(() => {
+    if (products.length === 0) {
+      axiosInstance
+        .get("/products")
+        .then((res) => {
+          setProducts(res.data);
+
+          let allCategories = res.data.map((product) => product.category);
+          let uniqueCategories = [...new Set(allCategories)];
+
+          setCategories([...categories, ...uniqueCategories]);
+
+          setTotalProducts(res.data.length);
+
+          setCurrentProducts(
+            res.data.slice(indexOfFirstProduct, indexOfLastProduct)
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      if (selectedCategory === "All") {
+        setTotalProducts(products.length);
+        setCurrentProducts(
+          products.slice(indexOfFirstProduct, indexOfLastProduct)
+        );
+      } else {
+        let filteredProduct = products.filter(
+          (product) => product.category === selectedCategory
+        );
+        setTotalProducts(filteredProduct.length);
+        setCurrentProducts(
+          filteredProduct.slice(indexOfFirstProduct, indexOfLastProduct)
+        );
+      }
+    }
+  }, [indexOfFirstProduct, indexOfLastProduct, products, selectedCategory]);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -58,14 +79,54 @@ const AllProducts = () => {
 
   const handleFilter = (value) => {
     setSelectedCategory(value);
+
+    setCurrentPage(1);
+
+    let filteredProduct = products.filter(
+      (product) => product.category === value
+    );
+
+    setTotalProducts(filteredProduct.length);
+
+    setCurrentProducts(
+      filteredProduct.slice(indexOfFirstProduct, indexOfLastProduct)
+    );
   };
 
   return (
     <div className="container">
       <div className="heading text-position">
-        <h1>Let's introduce with our cat programmers!</h1>
+        <h1>Latest products</h1>
+        <hr />
       </div>
-      <div>
+      <div className="buttons">
+        {categories.map((category) => {
+          return (
+            <button
+              className="btn btn-outline-dark me-2"
+              value={category}
+              onClick={(e) => handleFilter(e.target.value)}
+            >
+              {category}
+            </button>
+          );
+        })}
+        <button
+          className="btn btn-outline-dark me-2"
+          value="highToLow"
+          onClick={(e) => handlePriceSorting(e.target.value)}
+        >
+          High to Low
+        </button>
+        <button
+          className="btn btn-outline-dark me-2"
+          value="lowToHigh"
+          onClick={(e) => handlePriceSorting(e.target.value)}
+        >
+          Low to High
+        </button>
+      </div>
+      {/* <div>
         <label htmlFor="price">Filter according to price:</label>
         <select
           name="price"
@@ -76,8 +137,8 @@ const AllProducts = () => {
           <option value="highToLow">High to Low</option>
           <option value="lowToHigh">Low to High</option>
         </select>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label htmlFor="categories">Filter according to categories:</label>
         <select
           name="categories"
@@ -88,21 +149,15 @@ const AllProducts = () => {
             return <option value={category}>{category}</option>;
           })}
         </select>
-      </div>
+      </div> */}
       <div className="cards">
-        {selectedCategory === "All"
-          ? currentProducts.map((product) => {
-              return <Product key={product.id} {...product} />;
-            })
-          : products
-              .filter((product) => product.category === selectedCategory)
-              .map((product) => {
-                return <Product key={product.id} {...product} />;
-              })}
+        {currentProducts.map((product) => {
+          return <Product key={product.id} {...product} />;
+        })}
       </div>
       <Pagination
         productsPerPage={productsPerPage}
-        totalProducts={products.length}
+        totalProducts={totalProducts}
         paginate={paginate}
       />
     </div>

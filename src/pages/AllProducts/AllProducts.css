@@ -1,7 +1,4 @@
 h1 {
-  font-size: 1.3em;
-  font-weight: 900;
-  line-height: 1.5em;
   text-transform: uppercase;
   color: rgba(151, 40, 64, 0.971);
 }
@@ -19,6 +16,10 @@ h1 {
 
 .text-position {
   text-align: center;
+}
+
+.buttons button {
+  margin: 1% 0 1% 0;
 }
 
 /* Cards' design start */
